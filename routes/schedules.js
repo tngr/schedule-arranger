@@ -11,14 +11,10 @@ const Comment = require('../models/comment');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
-
-// router.get('/new', authenticationEnsurer, (req, res, next) => {
 router.get('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
-  //res.render('new', { user: req.user });
   res.render('new', { user: req.user, csrfToken: req.csrfToken() });
 });
 
-//router.post('/', authenticationEnsurer, (req, res, next) => {
 router.post('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const scheduleId = uuid.v4();
   const updatedAt = new Date();
@@ -72,6 +68,7 @@ router.get('/:scheduleId', authenticationEnsurer, (req, res, next) => {
       order: [[User, '"username"', 'ASC'], ['"candidateId"', 'ASC']]
     });
   }).then((availabilities) => {
+
     // 出欠 MapMap(キー:ユーザー ID, 値:出欠Map(キー:候補 ID, 値:出欠)) を作成する
     const availabilityMapMap = new Map(); // key: userId, value: Map(key: candidateId, availability)
     availabilities.forEach((a) => {
