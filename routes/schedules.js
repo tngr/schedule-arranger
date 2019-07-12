@@ -8,12 +8,18 @@ const Candidate = require('../models/candidate');
 const User = require('../models/user');
 const Availability = require('../models/availability');
 const Comment = require('../models/comment');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
-router.get('/new', authenticationEnsurer, (req, res, next) => {
-  res.render('new', { user: req.user });
+
+// router.get('/new', authenticationEnsurer, (req, res, next) => {
+router.get('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
+  //res.render('new', { user: req.user });
+  res.render('new', { user: req.user, csrfToken: req.csrfToken() });
 });
 
-router.post('/', authenticationEnsurer, (req, res, next) => {
+//router.post('/', authenticationEnsurer, (req, res, next) => {
+router.post('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const scheduleId = uuid.v4();
   const updatedAt = new Date();
   Schedule.create({
@@ -120,8 +126,9 @@ router.get('/:scheduleId', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.get('/:scheduleId/edit', authenticationEnsurer, (req, res, next) => {
-  Schedule.findOne({
+//router.get('/:scheduleId/edit', authenticationEnsurer, (req, res, next) => {
+router.get('/:scheduleId/edit', authenticationEnsurer, csrfProtection, (req, res, next) => {
+Schedule.findOne({
     where: {
       scheduleId: req.params.scheduleId
     }
@@ -134,7 +141,8 @@ router.get('/:scheduleId/edit', authenticationEnsurer, (req, res, next) => {
         res.render('edit', {
           user: req.user,
           schedule: schedule,
-          candidates: candidates
+          candidates: candidates,
+          csrfToken: req.csrfToken()
         });
       });
     } else {
@@ -149,7 +157,8 @@ function isMine(req, schedule) {
   return schedule && parseInt(schedule.createdBy) === parseInt(req.user.id);
 }
 
-router.post('/:scheduleId', authenticationEnsurer, (req, res, next) => {
+//router.post('/:scheduleId', authenticationEnsurer, (req, res, next) => {
+router.post('/:scheduleId', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Schedule.findOne({
     where: {
       scheduleId: req.params.scheduleId
