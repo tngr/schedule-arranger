@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Schedule = require('../models/schedule');
+const User = require('../models/user');
 const moment = require('moment-timezone');
 
 /* GET home page. */
@@ -12,6 +13,12 @@ router.get('/', (req, res, next) => {
       // where: {
       //   createdBy: req.user.id
       // },
+      include: [
+        {
+          model: User,
+          attributes: ['userId', 'username']
+        }
+      ],
       order: [['"updatedAt"', 'DESC']]
     }).then((schedules) => {
       schedules.forEach((schedule) => {

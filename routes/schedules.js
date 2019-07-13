@@ -123,7 +123,6 @@ router.get('/:scheduleId', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-//router.get('/:scheduleId/edit', authenticationEnsurer, (req, res, next) => {
 router.get('/:scheduleId/edit', authenticationEnsurer, csrfProtection, (req, res, next) => {
 Schedule.findOne({
     where: {
@@ -154,7 +153,6 @@ function isMine(req, schedule) {
   return schedule && parseInt(schedule.createdBy) === parseInt(req.user.id);
 }
 
-//router.post('/:scheduleId', authenticationEnsurer, (req, res, next) => {
 router.post('/:scheduleId', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Schedule.findOne({
     where: {
